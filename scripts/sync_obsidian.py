@@ -16,6 +16,12 @@
   * %%Obsidian 註解%%                → 移除
   * 缺少 title / date 時自動補上（檔名、檔案修改日期）
 
+圖片保護：
+  * 圖片必須在 vault 裡。文章引用的圖片找不到、或位在 vault 外面（如 Downloads），
+    同步會直接中止，網站不會有任何變動，避免發出破圖。
+  * 外部網址的圖片（https://…）不會被備份，只會提醒。
+  * 真的要略過有問題的圖片，加上 --allow-missing。
+
 用法：
   python3 scripts/sync_obsidian.py --vault "/path/to/你的Vault"   # 第一次，會記住路徑
   python3 scripts/sync_obsidian.py                                 # 之後直接執行
@@ -118,6 +124,8 @@ class Synced:
         self.images_index: dict[str, Path] = {}  # 檔名 → vault 內實際位置
         self.copied_images: dict[str, Path] = {}  # static/images 內的檔名 → 來源
         self.warnings: list[str] = []
+        self.missing: list[str] = []             # 找不到的圖片（預設會讓同步中止）
+        self.remote: dict[str, list[str]] = {}   # 筆記名稱 → 使用外部網址的圖片
 
     # ── 索引 ──
     def build_image_index(self) -> None:
@@ -141,17 +149,27 @@ class Synced:
         if owner is not None and owner != source:
             name = hashlib.md5(str(source).encode()).hexdigest()[:6] + "-" + safe
         self.copied_images[name] = source
-        if not self.dry_run:
-            IMAGES.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, IMAGES / name)
         return "/images/" + urllib.parse.quote(name)
 
-    def find_image(self, ref: str, note_dir: Path) -> Path | None:
+    def find_image(self, ref: str, note_dir: Path) -> tuple[Path | None, str]:
+        """回傳 (圖片位置, 原因)。原因：ok／outside（在 vault 外面）／missing（找不到）。"""
         ref = urllib.parse.unquote(ref.strip())
+        if ref.startswith("file://"):
+            ref = ref[len("file://"):]
         for candidate in (note_dir / ref, self.vault / ref):
             if candidate.is_file():
-                return candidate
-        return self.images_index.get(Path(ref).name.lower())
+                real = candidate.resolve()
+                if self.vault in real.parents:
+                    return real, "ok"
+                return None, "outside"
+        found = self.images_index.get(Path(ref).name.lower())
+        return (found, "ok") if found else (None, "missing")
+
+    def report_missing(self, note_name: str, ref: str, reason: str) -> None:
+        if reason == "outside":
+            self.missing.append(f"{note_name}：圖片 {ref} 不在 vault 裡（可能是 Downloads 之類的位置）")
+        else:
+            self.missing.append(f"{note_name}：找不到圖片 {ref}")
 
     # ── 轉換主流程 ──
     def convert_body(self, body: str, note_path: Path) -> str:
@@ -162,9 +180,9 @@ class Synced:
         def embed(m: re.Match) -> str:
             target, alias = m.group(1).strip(), (m.group(2) or "").strip()
             if Path(target).suffix.lower() in IMAGE_EXT:
-                src = self.find_image(target, note_dir)
+                src, reason = self.find_image(target, note_dir)
                 if src is None:
-                    self.warnings.append(f"{note_path.name}：找不到圖片 {target}")
+                    self.report_missing(note_path.name, target, reason)
                     return ""
                 alt = "" if re.fullmatch(r"\d+(x\d+)?", alias) else alias
                 return f"![{alt}]({self.place_image(src)})"
@@ -184,16 +202,18 @@ class Synced:
 
         def std_image(m: re.Match) -> str:
             alt, ref = m.group(1), m.group(2)
-            src = self.find_image(ref, note_dir)
+            src, reason = self.find_image(ref, note_dir)
             if src is None:
-                self.warnings.append(f"{note_path.name}：找不到圖片 {ref}")
+                self.report_missing(note_path.name, ref, reason)
                 return m.group(0)
             return f"![{alt}]({self.place_image(src)})"
 
         def inline(text: str) -> str:
             text = re.sub(r"!\[\[([^\[\]|]+?)(?:\|([^\[\]]*))?\]\]", embed, text)
             text = re.sub(r"\[\[([^\[\]|#]+)(#[^\[\]|]*)?(?:\|([^\[\]]*))?\]\]", link, text)
-            text = re.sub(r"!\[([^\]]*)\]\((?!https?://|/|data:)([^)\s]+)\)", std_image, text)
+            for m in re.finditer(r"!\[[^\]]*\]\((https?://[^)\s]+)\)", text):
+                self.remote.setdefault(note_path.name, []).append(m.group(1))
+            text = re.sub(r"!\[([^\]]*)\]\((?!https?://|data:|/images/)([^)\s]+)\)", std_image, text)
             text = re.sub(r"==([^=\n]+?)==", r"<mark>\1</mark>", text)
             return text
 
@@ -255,13 +275,14 @@ def main() -> None:
     ap.add_argument("--vault", help="Obsidian vault 資料夾路徑")
     ap.add_argument("--publish-folder", default="Publish", help="vault 內放待發布筆記的資料夾名稱（預設 Publish）")
     ap.add_argument("--dry-run", action="store_true", help="只顯示會做什麼，不實際寫入")
+    ap.add_argument("--allow-missing", action="store_true", help="即使有找不到的圖片也照常同步（那些圖片會被略過）")
     args = ap.parse_args()
 
     vault = resolve_vault(args.vault)
     publish_dir = vault / args.publish_folder
     if not publish_dir.is_dir():
         sys.exit(f"vault 裡找不到「{args.publish_folder}」資料夾：{publish_dir}\n"
-                 f"請先在 vault 建立它，並在裡面放 excerpts、reviews、info 子資料夾。")
+                 f"請先在 vault 建立它，並在裡面放 reading、travel、essays、guides 子資料夾。")
     if args.vault and not args.dry_run:
         VAULT_FILE.write_text(str(vault), encoding="utf-8")
 
@@ -297,20 +318,40 @@ def main() -> None:
         state.register_note(src, site_rel, fm_get(fm, "title"))
         published.append((src, dest_rel, fm, body))
 
-    # 清掉上次同步的內容，再寫入這次的
+    # 先在記憶體裡轉換所有筆記（還不寫入任何東西），確認沒有問題
+    converted = [(src, dest_rel, add_missing_fields(fm, src), state.convert_body(body, src))
+                 for src, dest_rel, fm, body in published]
+
+    if state.missing and not args.allow_missing:
+        print(f"發現 {len(state.missing)} 個圖片問題，已中止，網站沒有任何變動：")
+        for item in state.missing:
+            print("  - " + item)
+        print()
+        print("請處理後再同步一次：")
+        print("  · 把圖片「拖進」或「貼上」到 Obsidian，讓它存進 vault（不要用 Downloads 等位置的路徑）")
+        print("  · 或把文章裡不要的圖片拿掉")
+        print("  · 真的要略過這些圖片，可以加上 --allow-missing")
+        sys.exit(1)
+    for item in state.missing:
+        state.warnings.append(item + "，已略過這張圖片")
+
+    # 確定沒問題了：清掉上次同步的內容，再寫入這次的
     previous = load_manifest()
     previous_existing = [f for f in previous if (ROOT / f).is_file()]
     remove_previous(previous, args.dry_run)
 
     written: list[str] = []
-    for src, dest_rel, fm, body in published:
-        out_fm = add_missing_fields(fm, src)
-        out_body = state.convert_body(body, src)
+    for src, dest_rel, out_fm, out_body in converted:
         dest = ROOT / dest_rel
         if not args.dry_run:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(f"---\n{out_fm}\n---\n{out_body}", encoding="utf-8", newline="\n")
         written.append(dest_rel)
+
+    if not args.dry_run:
+        for name, source in state.copied_images.items():
+            IMAGES.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, IMAGES / name)
 
     note_files = list(written)
     written += [f"static/images/{name}" for name in sorted(state.copied_images)]
@@ -324,6 +365,9 @@ def main() -> None:
     for f in removed:
         print("  從網站移除：" + f.removeprefix("content/"))
     print(f"{'（預覽）' if args.dry_run else ''}同步完成：{note_count} 篇已發布、{skipped} 篇未發布（已略過）、{len(state.copied_images)} 張圖片。")
+    for note, urls in state.remote.items():
+        print(f"  注意：{note} 有 {len(urls)} 張圖片使用外部網址，不會被備份；"
+              f"對方網站消失時圖片就會破掉。建議把圖片存進 Obsidian。")
     for w in state.warnings:
         print("  注意：" + w)
 

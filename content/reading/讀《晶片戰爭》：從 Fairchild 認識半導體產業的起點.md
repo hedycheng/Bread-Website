@@ -3,10 +3,10 @@ date: 2026-11-19
 book: 晶片戰爭
 author: 克里斯．米勒（Chris Miller）
 tags:
-  - 小說
+  - 商業
 title: "讀《晶片戰爭》：從 Fairchild 認識半導體產業的起點"
 ---
-![](/images/%E6%99%B6%E7%89%87%E6%88%B0%E7%88%AD%EF%BC%9A%E5%8D%8A%E5%B0%8E%E9%AB%94%E5%89%96%E9%9D%A2%E5%9C%96.png)
+![](/images/%E6%99%B6%E7%89%87%E6%88%B0%E7%88%AD%EF%BC%9A%E5%8D%8A%E5%B0%8E%E9%AB%94%E5%89%96%E9%9D%A2%E5%9C%96-1.png)
 
 > **一間曾經定義產業的公司，如何在創新與競爭中逐漸退場？**
 
