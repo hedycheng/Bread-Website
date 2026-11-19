@@ -300,11 +300,17 @@ def main() -> None:
             dest.write_text(f"---\n{out_fm}\n---\n{out_body}", encoding="utf-8", newline="\n")
         written.append(dest_rel)
 
+    note_files = list(written)
     written += [f"static/images/{name}" for name in sorted(state.copied_images)]
     if not args.dry_run:
         MANIFEST.write_text(json.dumps({"files": written}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     note_count = len(published)
+    removed = [f for f in previous if f.startswith("content/") and f not in note_files]
+    for f in note_files:
+        print("  發布：" + f.removeprefix("content/"))
+    for f in removed:
+        print("  從網站移除：" + f.removeprefix("content/"))
     print(f"{'（預覽）' if args.dry_run else ''}同步完成：{note_count} 篇已發布、{skipped} 篇未發布（已略過）、{len(state.copied_images)} 張圖片。")
     for w in state.warnings:
         print("  注意：" + w)
