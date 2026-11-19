@@ -28,7 +28,7 @@ buildFuture = true            # 日期晚於「現在」的文章也照常顯示
   lastmod = ["updated", "lastmod", "date"]
 
 [params]
-  description = "定期分享書摘，以及零碎但可能對你有幫助的想法"
+  description = "定期分享書摘、遊記、隨筆，以及一些實用資訊。"
   author = "Bread Cheng"
 
 # ─────────────────────────────────────────────
