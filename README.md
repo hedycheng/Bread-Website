@@ -1,6 +1,6 @@
 # 我的閱讀筆記（Hugo + Obsidian + GitHub Pages）
 
-在 Obsidian 寫作，把筆記屬性 `publish` 勾成 true，執行一個指令，網站就會自動更新。
+在 Obsidian 寫作，把筆記屬性 `publish` 設成 true，雙擊同步，網站就會自動更新。
 
 - 網站：Hugo 靜態網站，免費部署在 GitHub Pages
 - 寫作：Obsidian（原稿永遠在你自己的 vault 裡）
@@ -8,72 +8,95 @@
 
 ---
 
-## 一、第一次設定（約 15 分鐘）
+## 一、四個分類
 
-### 1. 上傳到 GitHub
+一篇文章只屬於一個分類。寫完問自己「這篇主要在做什麼？」
 
-1. 到 GitHub 建立新的 repository，例如 `reading-notes`，設為 **Public**（免費帳號的 GitHub Pages 通常需要公開 repo），**不要**勾選 README。
-2. 在這個資料夾打開終端機，依序執行（把 `你的帳號` 換掉）：
+| 分類 | Obsidian 資料夾 | 判斷問題 | 例子 |
+|---|---|---|---|
+| **閱讀** | `Publish/reading` | 在講某本書嗎？ | 書摘、書評、心得 |
+| **遊記** | `Publish/travel` | 在講我去過的地方、發生過的事嗎？ | 旅行紀錄、散步 |
+| **隨筆** | `Publish/essays` | 是我的想法或感受嗎？ | 不針對書或旅行的想法 |
+| **指南** | `Publish/guides` | 是別人可以照著做、照著找的整理嗎？ | 申請流程、推薦清單 |
 
-```bash
-git init -b main
-git add -A
-git commit -m "第一次提交"
-git remote add origin https://github.com/你的帳號/reading-notes.git
-git push -u origin main
-```
+**邊界提醒**：寫成「我去了這家店，感覺如何」的故事放遊記；整理成「推薦哪幾家、地址、特色」的清單放指南。
 
-### 2. 開啟 GitHub Pages
+主題用**標籤**分，不要用分類：例如 `書摘`、`書評`、`小說`、`荷蘭`、`流程`、`清單`。
 
-repository 頁面 → **Settings** → **Pages** → **Build and deployment** → **Source** 選 **GitHub Actions**。
-
-然後到 **Actions** 分頁，若第一次執行失敗，點進去按 **Re-run all jobs**。約 1–2 分鐘後，網址會是：
-
-`https://你的帳號.github.io/reading-notes/`
-
-### 3. 改成你的網站資訊
-
-編輯 `hugo.toml`：`title`（網站名稱）、`params.description`（一句話介紹）、`params.author`（頁尾顯示的名字）。
-再編輯 `content/about.md` 寫自我介紹。
-
-### 4. 刪除範例文章
-
-刪掉這三個檔案（它們只是用來預覽版面）：
-
-- `content/excerpts/sample-excerpt.md`
-- `content/reviews/sample-review.md`
-- `content/info/sample-info.md`
+另外網站會自動產生三種索引頁（在每頁頁尾可以點）：
+- **依標籤**：所有標籤
+- **依書名**：同一本書的所有文章集中在一起（來自 `book` 屬性）
+- **依地點**：同一個地方的所有文章集中在一起（來自 `place` 屬性）
 
 ---
 
 ## 二、Obsidian 設定
 
-1. 在 vault 裡建立資料夾結構（資料夾名稱就是網站分類的網址）：
+### 資料夾
+
+在 vault 裡建立（名稱要用英文、完全照寫）：
 
 ```
-你的Vault/
-└── Publish/
-    ├── excerpts/   ← 書摘
-    ├── reviews/    ← 心得
-    └── info/       ← 資訊
+Publish/
+  ├ reading/
+  ├ travel/
+  ├ essays/
+  └ guides/
 ```
 
-2. （建議）設定 → 核心外掛 → 開啟「範本」，把本專案 `obsidian-templates/` 裡的三個檔案複製到你的範本資料夾。之後新增筆記時插入範本，就有現成的屬性。
-3. 每篇文章的屬性（檔案最上面）：
+### 範本
 
+設定 → 核心外掛 → 開啟「範本」，把本專案 `obsidian-templates/` 的四個檔案放進你的範本資料夾。新增筆記後，用指令面板（Command + P）選「範本：插入範本」。
+
+### 每個分類的屬性
+
+放在檔案最上面。`publish: true` 才會發布。
+
+**閱讀**
 ```yaml
 ---
-title: 文章標題
+title: 文章標題        # 沒填會用檔名
 date: 2026-11-19
-book: 書名          # 書摘、心得用，可留空
-author: 作者        # 可留空
-rating: 4           # 1–5 顆星，可留空
-tags: [小說, 日本]
-publish: false      # 改成 true 才會發布
+book: 書名            # 同一本書的文章會集中在「書」的索引
+author: 作者
+rating: 4             # 1–5，可留空
+tags: [書摘]          # 書摘、書評、隨想…
+publish: true
 ---
 ```
 
-沒有填 `title` 會用檔名，沒有填 `date` 會用檔案修改日期。
+**遊記**
+```yaml
+---
+title: 京都的下午
+date: 2026-11-19
+place: [日本, 京都]    # 多個地點用中括號，單一地點也可以直接寫 place: 京都
+trip_date: 2026 年 10 月
+tags: [散步]
+publish: true
+---
+```
+
+**隨筆**
+```yaml
+---
+title: 標題
+date: 2026-11-19
+tags: []
+publish: true
+---
+```
+
+**指南**
+```yaml
+---
+title: 申請某某證的方式
+date: 2026-11-19
+updated: 2026-11-19   # 每次修訂就改這個日期，文章會顯示「最後更新」
+tags: [流程]          # 流程、清單…
+publish: true
+---
+```
 
 ### 同步時會自動轉換
 
@@ -85,76 +108,83 @@ publish: false      # 改成 true 才會發布
 | `> [!note] 標題` | 提示框 |
 | `%%私人註解%%` | 移除，不會公開 |
 
+筆記放在 `Publish` 裡**不是這四個分類的資料夾**時，會被略過並提醒你。
+
 ---
 
-## 三、日常發布
+## 三、日常發布（Mac）
 
 1. 在 Obsidian 寫好文章，把 `publish` 改成 `true`。
-2. 在這個專案資料夾執行：
+2. 雙擊網站資料夾裡的 **`同步到網站.command`**。
+   - 第一次會讓你選 Obsidian vault 資料夾，之後會記住。
+   - 它會先列出「這次會發布哪些文章」，你確認後按 Enter 才會真的同步。
+3. 完成後會自動打開 GitHub Desktop：填一句摘要 → **Commit to main** → **Push origin**。
+4. 約 1–2 分鐘後網站更新。
+
+第一次雙擊如果跳出「無法打開，因為無法驗證開發者」，在檔案上按**右鍵 → 打開 → 打開**。
+如果跳出安裝「開發人員工具」的視窗，按安裝並等它完成，再重新雙擊一次。
+
+不想用雙擊的話，也可以在終端機手動執行：
 
 ```bash
-./publish.sh --vault "/你的/Vault/路徑"    # 第一次，之後會記住
-./publish.sh                                # 之後只要這一行
+python3 scripts/sync_obsidian.py --vault "/你的/Vault/路徑"
 ```
 
-3. 約 1–2 分鐘後網站更新。
+**取消發布**：把 `publish` 改回 `false`（或刪除該檔案），再同步一次，文章就會從網站消失。
 
-沒有 bash 的話（例如 Windows），可以手動執行：
-
-```bash
-python3 scripts/sync_obsidian.py --vault "C:\路徑\你的Vault"
-git add -A
-git commit -m "發布更新"
-git push
-```
-
-**取消發布**：把 `publish` 改回 `false`（或刪除該檔案），再執行一次 `./publish.sh`，文章就會從網站消失。
-
-> ⚠️ **隱私提醒**：這是公開 repo，推送過的內容會留在 git 歷史裡。**不要把私人內容的 `publish` 設成 true 後再推送**；取消發布只能讓它從網站消失，無法抹除歷史紀錄。想先確認會發布什麼，可以用 `python3 scripts/sync_obsidian.py --dry-run` 預覽。
+> ⚠️ **隱私提醒**：這是公開 repo，推送過的內容會留在 git 歷史裡。**不要把私人內容的 `publish` 設成 true 再推送**；取消發布只能讓它從網站消失，無法抹除歷史紀錄。想先確認會發布什麼，可以加 `--dry-run` 預覽，雙擊工具本來就會先預覽。
 
 ---
 
-## 四、在本機預覽（選用）
+## 四、改網站名稱和說明
 
-安裝 Hugo（Mac：`brew install hugo`；其他系統見 https://gohugo.io/installation/），然後：
+編輯 `hugo.toml`：`title`（網站名稱）、`params.description`（一句話介紹）、`params.author`（頁尾顯示的名字）。
+再編輯 `content/about.md` 寫自我介紹。
+
+範例文章（檔名開頭是 `sample-`）可以直接刪除：
+`content/reading/sample-reading.md`、`content/travel/sample-travel.md`、`content/essays/sample-essay.md`、`content/guides/sample-guide.md`
+
+---
+
+## 五、在本機預覽（選用）
+
+安裝 Hugo（Mac：`brew install hugo`），然後：
 
 ```bash
 python3 scripts/sync_obsidian.py
 hugo server
 ```
 
-打開 http://localhost:1313 就能看到網站，存檔後會自動重新整理。
+打開 http://localhost:1313 就能看到網站。
 
 ---
 
-## 五、常見問題
+## 六、常見問題
 
 **文章沒有出現在網站上？**
-確認：① `publish` 是 `true`；② 檔案在 `Publish/` 底下的子資料夾（`excerpts`、`reviews`、`info`）；③ 有執行 `./publish.sh` 並推送成功；④ GitHub 的 Actions 分頁顯示綠色勾勾。
-
-**Actions 顯示 "Get Pages site failed"？**
-還沒完成「二、開啟 GitHub Pages」的設定，把 Source 選成 GitHub Actions 後重新執行。
+確認：① `publish` 是 `true`；② 筆記放在 `Publish/reading`、`travel`、`essays`、`guides` 其中一個；③ 有 Commit 並 Push；④ GitHub 的 Actions 分頁是綠色勾勾。
 
 **想換外觀？**
-版面在 `layouts/`，樣式在 `assets/css/main.css`，顏色和字型都集中在檔案最上面的變數。
+版面在 `layouts/`，樣式在 `assets/css/main.css`，顏色和字型集中在檔案最上面的變數。
 
 **想綁自己的網域？**
-買好網域後，到 repository → Settings → Pages → Custom domain 填入，再依畫面說明到網域商設定 DNS。完成後把 `hugo.toml` 的 `baseURL` 改成你的網域。
+買好網域後，到 repository → Settings → Pages → Custom domain 填入，再到網域商設定 DNS。完成後把 `hugo.toml` 的 `baseURL` 改成你的網域。
+
+**想新增或改名分類？**
+分類就是 `content/` 底下有 `_index.md` 的資料夾。新增一個資料夾和 `_index.md`，再到 `hugo.toml` 的 `[[menus.main]]` 加一項，並在 Obsidian 建同名資料夾即可。
 
 ---
 
-## 六、專案結構
+## 七、專案結構
 
 ```
 hugo.toml              網站設定
-content/               網站內容（同步腳本會寫入這裡）
+content/               網站內容（同步腳本會寫入分類資料夾）
 layouts/               版型
 assets/css/main.css    樣式
 static/images/         圖片（同步腳本會寫入這裡）
 scripts/sync_obsidian.py   Obsidian 同步腳本
-publish.sh             一鍵發布
+同步到網站.command     Mac 雙擊同步
 obsidian-templates/    給 Obsidian 的範本
 .github/workflows/     GitHub 自動部署
 ```
-
-之後可以再加：按讚、電子報訂閱、站內搜尋、自動產生 Threads / Instagram 短版貼文。

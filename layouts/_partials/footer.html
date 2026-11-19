@@ -1,5 +1,11 @@
 <footer class="site-footer">
   <div class="wrap">
-    <p>© {{ now.Year }} {{ site.Params.author }} · <a href="{{ "index.xml" | relURL }}">RSS 訂閱</a></p>
+    <p class="footer-links">
+      <a href="{{ "tags/" | relURL }}">依標籤</a>
+      <a href="{{ "book/" | relURL }}">依書名</a>
+      <a href="{{ "place/" | relURL }}">依地點</a>
+      <a href="{{ "index.xml" | relURL }}">RSS 訂閱</a>
+    </p>
+    <p>© {{ now.Year }} {{ site.Params.author }}</p>
   </div>
 </footer>

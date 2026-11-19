@@ -1,7 +1,8 @@
 {{ define "main" }}
 <header class="page-header">
-  <h1>{{ .Title }}</h1>
+  <h1>{{ if eq .Kind "term" }}{{ with .Data.Singular }}{{ if eq . "book" }}《{{ $.Title }}》{{ else }}{{ $.Title }}{{ end }}{{ else }}{{ .Title }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h1>
   {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  {{ with .Params.browse_url }}<p class="browse"><a href="{{ (strings.TrimPrefix "/" .) | relURL }}">{{ $.Params.browse_label }} →</a></p>{{ end }}
 </header>
 
 {{ $paginator := .Paginate .Pages.ByDate.Reverse }}

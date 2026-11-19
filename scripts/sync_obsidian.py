@@ -5,6 +5,7 @@
 規則（保護隱私）：
   * 只會讀取 vault 裡的 Publish/ 資料夾（可用 --publish-folder 改名）。
   * 只有檔案開頭屬性含 `publish: true` 的筆記才會被複製，其餘一律不碰。
+  * 筆記必須放在 Publish/ 底下的分類資料夾（reading、travel、essays、guides）。
     （也接受 `published: true`，但輸出時會移除，因為 Hugo 把 published 當成日期欄位。）
   * vault 的其他地方（私人筆記）完全不會被讀取內容，只會為了找圖片而掃描檔名。
 
@@ -44,6 +45,7 @@ VAULT_FILE = ROOT / "scripts" / ".vault-path"          # 記住 vault 位置（�
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".avif"}
 SKIP_DIRS = {".obsidian", ".git", ".trash", "node_modules"}
+INDEX_DIRS = {"tags", "book", "place"}   # 索引頁資料夾，不是文章分類
 
 FM_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)", re.S)
 
@@ -266,6 +268,10 @@ def main() -> None:
     state = Synced(vault, publish_dir, args.dry_run)
     state.build_image_index()
 
+    # 網站目前有哪些分類（content/ 底下有 _index.md 的資料夾）
+    sections = sorted(d.name for d in CONTENT.iterdir()
+                      if d.is_dir() and (d / "_index.md").exists() and d.name not in INDEX_DIRS)
+
     # 第一輪：找出所有已發布的筆記，建立連結對照表
     published: list[tuple[Path, str, str, str]] = []  # (來源, 目的相對路徑, 屬性, 內文)
     skipped = 0
@@ -278,6 +284,11 @@ def main() -> None:
             skipped += 1
             continue
         rel = src.relative_to(publish_dir)
+        if len(rel.parts) > 1 and rel.parts[0] not in sections:
+            state.warnings.append(
+                f"略過 {rel.as_posix()}：「{rel.parts[0]}」不是網站的分類資料夾"
+                f"（可用的是：{'、'.join(sections)}）")
+            continue
         if rel.name == "_index.md":
             state.warnings.append(f"略過 {rel}：_index.md 請直接在網站專案的 content/ 裡編輯")
             continue
@@ -288,6 +299,7 @@ def main() -> None:
 
     # 清掉上次同步的內容，再寫入這次的
     previous = load_manifest()
+    previous_existing = [f for f in previous if (ROOT / f).is_file()]
     remove_previous(previous, args.dry_run)
 
     written: list[str] = []
@@ -306,7 +318,7 @@ def main() -> None:
         MANIFEST.write_text(json.dumps({"files": written}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     note_count = len(published)
-    removed = [f for f in previous if f.startswith("content/") and f not in note_files]
+    removed = [f for f in previous_existing if f.startswith("content/") and f not in note_files]
     for f in note_files:
         print("  發布：" + f.removeprefix("content/"))
     for f in removed:

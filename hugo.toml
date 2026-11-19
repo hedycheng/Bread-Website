@@ -17,8 +17,15 @@ buildFuture = true            # 日期晚於「現在」的文章也照常顯示
 [pagination]
   pagerSize = 12
 
+# 標籤、書名、地點都會自動產生索引頁（網址：/tags/、/book/、/place/）
 [taxonomies]
   tag = "tags"
+  book = "book"
+  place = "place"
+
+# 指南文章的「最後更新」日期：在筆記屬性寫 updated: 2026-11-19
+[frontmatter]
+  lastmod = ["updated", "lastmod", "date"]
 
 [params]
   description = "定期分享書摘，以及零碎但可能對你有幫助的想法"
@@ -28,23 +35,23 @@ buildFuture = true            # 日期晚於「現在」的文章也照常顯示
 #  導覽列
 # ─────────────────────────────────────────────
 [[menus.main]]
-  name = "書摘"
-  pageRef = "/excerpts"
+  name = "閱讀"
+  pageRef = "/reading"
   weight = 10
 
 [[menus.main]]
-  name = "心得"
-  pageRef = "/reviews"
+  name = "遊記"
+  pageRef = "/travel"
   weight = 20
 
 [[menus.main]]
-  name = "資訊"
-  pageRef = "/info"
+  name = "隨筆"
+  pageRef = "/essays"
   weight = 30
 
 [[menus.main]]
-  name = "標籤"
-  pageRef = "/tags"
+  name = "指南"
+  pageRef = "/guides"
   weight = 40
 
 [[menus.main]]

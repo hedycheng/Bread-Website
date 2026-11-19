@@ -73,7 +73,7 @@ main.wrap { padding-bottom: 4rem; }
 .post-header h1 { font-size: 1.8rem; line-height: 1.4; margin: .25rem 0 .4rem; }
 .eyebrow { margin: 0; font-size: .85rem; letter-spacing: .08em; }
 
-.book-card {
+.info-card {
   margin: 1.25rem 0 0;
   padding: .85rem 1.1rem;
   background: var(--card);
@@ -81,9 +81,16 @@ main.wrap { padding-bottom: 4rem; }
   border-left: 3px solid var(--accent);
   line-height: 1.6;
 }
-.book-title { font-weight: 700; }
-.book-author { color: var(--muted); font-size: .9rem; }
-.book-rating { color: var(--accent); letter-spacing: .15em; margin-top: .2rem; }
+.card-title { font-weight: 700; }
+.card-title a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+.card-title a:hover { color: var(--accent); }
+.card-title .sep { color: var(--muted); font-weight: 400; margin: 0 .15em; }
+.card-sub { color: var(--muted); font-size: .9rem; }
+.card-rating { color: var(--accent); letter-spacing: .15em; margin-top: .2rem; }
+
+.notice { margin: 1rem 0 0; padding: .6rem 1rem; font-size: .9rem; color: var(--muted); background: var(--card); border-radius: 8px; line-height: 1.6; }
+
+.browse { margin: .5rem 0 0; font-size: .95rem; }
 
 .prose { font-family: var(--serif); font-size: 1.05rem; line-height: 2; overflow-wrap: anywhere; }
 .prose h2, .prose h3, .prose h4 { font-family: var(--sans); line-height: 1.5; margin: 2.2rem 0 .6rem; }
@@ -142,6 +149,7 @@ main.wrap { padding-bottom: 4rem; }
 /* ── 頁尾 ── */
 .site-footer { border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .85rem; }
 .site-footer p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: .25rem 1.2rem; margin-bottom: .6rem !important; }
 .site-footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-width: 520px) {

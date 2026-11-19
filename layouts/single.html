@@ -3,18 +3,36 @@
   <header class="post-header">
     {{ if and .Section .Parent }}<p class="eyebrow"><a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a></p>{{ end }}
     <h1>{{ .Title }}</h1>
-    {{ if not .Date.IsZero }}<p class="meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006 年 1 月 2 日" }}</time></p>{{ end }}
+    {{ if not .Date.IsZero }}<p class="meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006 年 1 月 2 日" }}</time>{{ if .Params.updated }} · 最後更新 {{ .Lastmod.Format "2006 年 1 月 2 日" }}{{ end }}</p>{{ end }}
 
+    {{/* 閱讀：書名卡片 */}}
     {{ with .Params.book }}
-    <aside class="book-card">
-      <div class="book-title">《{{ . }}》</div>
-      {{ with $.Params.author }}<div class="book-author">{{ . }}</div>{{ end }}
+    <aside class="info-card">
+      <div class="card-title">《{{ with $.GetTerms "book" }}{{ range first 1 . }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ else }}{{ . }}{{ end }}》</div>
+      {{ with $.Params.author }}<div class="card-sub">{{ . }}</div>{{ end }}
       {{ with $.Params.rating }}
-      <div class="book-rating" aria-label="評分 {{ . }} / 5">
+      <div class="card-rating" aria-label="評分 {{ . }} / 5">
         {{ range seq 5 }}{{ if le . $.Params.rating }}★{{ else }}☆{{ end }}{{ end }}
       </div>
       {{ end }}
     </aside>
+    {{ end }}
+
+    {{/* 遊記：地點與旅行日期卡片 */}}
+    {{ with .GetTerms "place" }}
+    <aside class="info-card">
+      <div class="card-title">
+        {{ range $i, $p := . }}{{ if $i }}<span class="sep">／</span>{{ end }}<a href="{{ $p.RelPermalink }}">{{ $p.LinkTitle }}</a>{{ end }}
+      </div>
+      {{ with $.Params.trip_date }}<div class="card-sub">旅行日期：{{ . }}</div>{{ end }}
+    </aside>
+    {{ end }}
+
+    {{/* 指南：資料時效提醒 */}}
+    {{ if eq .Section "guides" }}
+    <p class="notice">
+      {{ if .Params.updated }}資料最後更新於 {{ .Lastmod.Format "2006 年 1 月 2 日" }}。{{ end }}流程與資訊可能隨時間變動，請以官方公告為準。
+    </p>
     {{ end }}
   </header>
 

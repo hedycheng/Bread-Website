@@ -1,12 +1,14 @@
 {{ define "main" }}
 <header class="page-header">
   <h1>{{ .Title }}</h1>
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
 </header>
 <ul class="tag-cloud">
+  {{ $isBook := eq .Data.Singular "book" }}
   {{ range .Data.Terms.Alphabetical }}
-  <li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }} <span>{{ .Count }}</span></a></li>
+  <li><a href="{{ .Page.RelPermalink }}">{{ if $isBook }}《{{ .Page.Title }}》{{ else }}{{ .Page.Title }}{{ end }} <span>{{ .Count }}</span></a></li>
   {{ else }}
-  <li class="empty">還沒有標籤。</li>
+  <li class="empty">還沒有內容。</li>
   {{ end }}
 </ul>
 {{ end }}
