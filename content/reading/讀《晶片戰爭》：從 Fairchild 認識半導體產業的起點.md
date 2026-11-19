@@ -1,7 +1,7 @@
 ---
 date: 2026-11-19
 book: 晶片戰爭
-author: 作者
+author: 克里斯．米勒（Chris Miller）
 tags:
   - 小說
 title: "讀《晶片戰爭》：從 Fairchild 認識半導體產業的起點"
