@@ -1,0 +1,70 @@
+# ─────────────────────────────────────────────
+#  網站基本設定（改這裡就能換名稱、說明）
+# ─────────────────────────────────────────────
+title = "我的閱讀筆記"
+
+# 部署到 GitHub Pages 時，GitHub Actions 會自動帶入正確網址，這裡可以不用改。
+# 之後綁自訂網域時，再把它改成你的網域，例如 "https://example.com/"
+baseURL = "https://example.com/"
+
+locale = "zh-TW"
+defaultContentLanguage = "zh-tw"
+hasCJKLanguage = true          # 中文字數、摘要計算需要
+summaryLength = 60
+enableRobotsTXT = true
+buildFuture = true            # 日期晚於「現在」的文章也照常顯示（避免時區差造成文章消失）
+
+[pagination]
+  pagerSize = 12
+
+[taxonomies]
+  tag = "tags"
+
+[params]
+  description = "書摘、心得與資訊整理"
+  author = "你的名字"
+
+# ─────────────────────────────────────────────
+#  導覽列
+# ─────────────────────────────────────────────
+[[menus.main]]
+  name = "書摘"
+  pageRef = "/excerpts"
+  weight = 10
+
+[[menus.main]]
+  name = "心得"
+  pageRef = "/reviews"
+  weight = 20
+
+[[menus.main]]
+  name = "資訊"
+  pageRef = "/info"
+  weight = 30
+
+[[menus.main]]
+  name = "標籤"
+  pageRef = "/tags"
+  weight = 40
+
+[[menus.main]]
+  name = "關於"
+  pageRef = "/about"
+  weight = 50
+
+# ─────────────────────────────────────────────
+#  Markdown 設定
+# ─────────────────────────────────────────────
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true            # 允許 <mark>（Obsidian 的 ==螢光標記==）
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.typographer]
+        disable = true         # 避免中文引號被自動替換
+  [markup.highlight]
+    noClasses = false
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]

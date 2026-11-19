@@ -1,0 +1,21 @@
+{{- /*
+  連結處理：
+  1. 指向 .md 檔的站內連結（由 Obsidian 同步腳本產生），轉成文章網址；找不到對應文章就只顯示文字，不產生壞連結。
+  2. 以 / 開頭的站內連結，補上網站子路徑（GitHub Pages 專案網站需要）。
+  3. 外部連結另開分頁。
+*/ -}}
+{{- $dest := .Destination -}}
+{{- $isExternal := or (strings.HasPrefix $dest "http://") (strings.HasPrefix $dest "https://") (strings.HasPrefix $dest "mailto:") -}}
+{{- if and (not $isExternal) (strings.HasSuffix $dest ".md") -}}
+  {{- with .PageInner.GetPage $dest -}}
+    <a href="{{ .RelPermalink }}">{{ $.Text | safeHTML }}</a>
+  {{- else -}}
+    {{ .Text | safeHTML }}
+  {{- end -}}
+{{- else if $isExternal -}}
+  <a href="{{ $dest }}"{{ with .Title }} title="{{ . }}"{{ end }} target="_blank" rel="noopener">{{ .Text | safeHTML }}</a>
+{{- else if strings.HasPrefix $dest "/" -}}
+  <a href="{{ (strings.TrimPrefix "/" $dest) | relURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- else -}}
+  <a href="{{ $dest }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- end -}}

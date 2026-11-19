@@ -1,0 +1,11 @@
+{{- /* 一般引用，以及 Obsidian 風格的 callout（> [!note] 標題） */ -}}
+{{- if eq .Type "alert" -}}
+<blockquote class="callout callout-{{ .AlertType }}">
+  <p class="callout-title">{{ with .AlertTitle }}{{ . }}{{ else }}{{ .AlertType | upper }}{{ end }}</p>
+  {{ .Text }}
+</blockquote>
+{{- else -}}
+<blockquote>
+  {{ .Text }}
+</blockquote>
+{{- end -}}

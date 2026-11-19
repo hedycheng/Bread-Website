@@ -1,0 +1,11 @@
+# Hugo 建置產物
+public/
+resources/_gen/
+.hugo_build.lock
+
+# 本機設定（不要提交）
+scripts/.vault-path
+
+# 系統檔案
+.DS_Store
+Thumbs.db

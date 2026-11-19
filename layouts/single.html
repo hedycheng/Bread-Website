@@ -1,0 +1,40 @@
+{{ define "main" }}
+<article class="post">
+  <header class="post-header">
+    {{ if and .Section .Parent }}<p class="eyebrow"><a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a></p>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ if not .Date.IsZero }}<p class="meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006 年 1 月 2 日" }}</time></p>{{ end }}
+
+    {{ with .Params.book }}
+    <aside class="book-card">
+      <div class="book-title">《{{ . }}》</div>
+      {{ with $.Params.author }}<div class="book-author">{{ . }}</div>{{ end }}
+      {{ with $.Params.rating }}
+      <div class="book-rating" aria-label="評分 {{ . }} / 5">
+        {{ range seq 5 }}{{ if le . $.Params.rating }}★{{ else }}☆{{ end }}{{ end }}
+      </div>
+      {{ end }}
+    </aside>
+    {{ end }}
+  </header>
+
+  <div class="prose">
+    {{ .Content }}
+  </div>
+
+  {{ with .GetTerms "tags" }}
+  <footer class="post-footer">
+    <ul class="tags">
+      {{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}
+    </ul>
+  </footer>
+  {{ end }}
+
+  {{ if or .PrevInSection .NextInSection }}
+  <nav class="post-nav" aria-label="上一篇與下一篇">
+    <div>{{ with .NextInSection }}<span>← 較舊</span><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}</div>
+    <div class="right">{{ with .PrevInSection }}<span>較新 →</span><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}</div>
+  </nav>
+  {{ end }}
+</article>
+{{ end }}

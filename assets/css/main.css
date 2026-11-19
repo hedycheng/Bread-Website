@@ -1,0 +1,151 @@
+:root {
+  --bg: #fbfaf7;
+  --fg: #26241f;
+  --muted: #7a756b;
+  --line: #e6e2d8;
+  --accent: #a4492d;
+  --card: #f3f0e8;
+  --mark: #fff0a8;
+  --sans: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --serif: "Noto Serif TC", "Songti TC", "PMingLiU", "Source Han Serif TC", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171613;
+    --fg: #e9e6de;
+    --muted: #9b968a;
+    --line: #2e2c27;
+    --accent: #e08a66;
+    --card: #211f1b;
+    --mark: #5a4a12;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 17px; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  line-height: 1.8;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: 42rem; margin: 0 auto; padding: 0 1.25rem; }
+main.wrap { padding-bottom: 4rem; }
+
+/* ── 頁首 ── */
+.site-header { border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
+.header-inner { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1.5rem; padding-top: 1rem; padding-bottom: 1rem; }
+.site-title { font-weight: 700; font-size: 1.1rem; color: var(--fg); }
+.site-title:hover { text-decoration: none; }
+.site-header nav ul { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; list-style: none; margin: 0; padding: 0; font-size: .95rem; }
+.site-header nav a { color: var(--muted); }
+.site-header nav a[aria-current="page"], .site-header nav a:hover { color: var(--fg); text-decoration: none; }
+
+/* ── 首頁 ── */
+.hero { padding: 1.5rem 0 1rem; }
+.hero h1 { font-size: 1.9rem; margin: 0 0 .25rem; line-height: 1.3; }
+.hero p { margin: 0; color: var(--muted); }
+.section-title { font-size: 1.05rem; color: var(--muted); font-weight: 600; letter-spacing: .08em; margin: 2.5rem 0 .5rem; border-bottom: 1px solid var(--line); padding-bottom: .5rem; }
+.page-header h1 { font-size: 1.7rem; line-height: 1.35; margin: 0 0 .5rem; }
+.page-header p { color: var(--muted); }
+
+/* ── 文章列表 ── */
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-list li { padding: 1.1rem 0; border-bottom: 1px solid var(--line); }
+.post-list h3 { margin: 0; font-size: 1.15rem; line-height: 1.5; }
+.post-list h3 a { color: var(--fg); }
+.post-list h3 a:hover { color: var(--accent); text-decoration: none; }
+.post-list .summary { margin: .25rem 0 0; color: var(--muted); font-size: .95rem; }
+.post-list .empty { color: var(--muted); border: 0; }
+.meta { margin: .1rem 0 0; font-size: .85rem; color: var(--muted); }
+.meta a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── 文章頁 ── */
+.post-header { margin-bottom: 1.5rem; }
+.post-header h1 { font-size: 1.8rem; line-height: 1.4; margin: .25rem 0 .4rem; }
+.eyebrow { margin: 0; font-size: .85rem; letter-spacing: .08em; }
+
+.book-card {
+  margin: 1.25rem 0 0;
+  padding: .85rem 1.1rem;
+  background: var(--card);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+  line-height: 1.6;
+}
+.book-title { font-weight: 700; }
+.book-author { color: var(--muted); font-size: .9rem; }
+.book-rating { color: var(--accent); letter-spacing: .15em; margin-top: .2rem; }
+
+.prose { font-family: var(--serif); font-size: 1.05rem; line-height: 2; overflow-wrap: anywhere; }
+.prose h2, .prose h3, .prose h4 { font-family: var(--sans); line-height: 1.5; margin: 2.2rem 0 .6rem; }
+.prose h2 { font-size: 1.35rem; }
+.prose h3 { font-size: 1.15rem; }
+.prose p { margin: 0 0 1.1rem; }
+.prose img { max-width: 100%; height: auto; border-radius: 6px; }
+.prose figure { margin: 1.5rem 0; text-align: center; }
+.prose figcaption { color: var(--muted); font-size: .85rem; margin-top: .4rem; font-family: var(--sans); }
+.prose mark { background: var(--mark); color: inherit; padding: .05em .15em; border-radius: 3px; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+.prose ul, .prose ol { padding-left: 1.4rem; }
+.prose code { font-size: .88em; background: var(--card); padding: .1em .35em; border-radius: 4px; }
+.prose pre { background: var(--card); padding: 1rem; border-radius: 8px; overflow-x: auto; line-height: 1.6; }
+.prose pre code { background: none; padding: 0; }
+.prose table { border-collapse: collapse; width: 100%; font-size: .95rem; margin: 1.2rem 0; }
+.prose th, .prose td { border: 1px solid var(--line); padding: .4rem .7rem; text-align: left; }
+
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding: .2rem 1.1rem;
+  border-left: 3px solid var(--line);
+  color: var(--muted);
+}
+.prose blockquote p:last-child { margin-bottom: 0; }
+
+.prose blockquote.callout {
+  color: var(--fg);
+  background: var(--card);
+  border-left-color: var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: .6rem 1.1rem;
+}
+.callout-title { font-family: var(--sans); font-size: .85rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); margin: 0 0 .3rem !important; }
+
+.post-footer { margin-top: 2.5rem; }
+.tags { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: 0; font-size: .9rem; }
+.tags a { background: var(--card); padding: .15rem .7rem; border-radius: 99px; color: var(--muted); }
+.tags a:hover { color: var(--accent); text-decoration: none; }
+
+.post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: .95rem; }
+.post-nav span { display: block; color: var(--muted); font-size: .8rem; }
+.post-nav .right { text-align: right; }
+
+/* ── 標籤總覽 ── */
+.tag-cloud { list-style: none; display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; }
+.tag-cloud a { background: var(--card); padding: .25rem .9rem; border-radius: 99px; color: var(--fg); }
+.tag-cloud span { color: var(--muted); font-size: .8rem; margin-left: .3rem; }
+
+/* ── 分頁 ── */
+.pagination { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: 2rem 0 0; justify-content: center; }
+.pagination .page-link { display: inline-block; padding: .2rem .7rem; border-radius: 6px; color: var(--muted); }
+.pagination .active .page-link { background: var(--card); color: var(--fg); }
+.pagination .disabled { display: none; }
+
+/* ── 頁尾 ── */
+.site-footer { border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .85rem; }
+.site-footer p { margin: 0; }
+.site-footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 520px) {
+  html { font-size: 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .post-header h1 { font-size: 1.5rem; }
+}

@@ -1,0 +1,6 @@
+{{/* 文章資訊列：日期 · 分類 · 書名／作者 */}}
+<p class="meta">
+  {{- if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006 年 1 月 2 日" }}</time>{{ end -}}
+  {{- if and .Section .Parent }} · <a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a>{{ end -}}
+  {{- with .Params.book }} · 《{{ . }}》{{ with $.Params.author }} {{ . }}{{ end }}{{ end -}}
+</p>
